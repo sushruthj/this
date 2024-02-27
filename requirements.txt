@@ -1,0 +1,6 @@
+telebot
+watchdog
+pycdlib
+pydub
+mutagen
+musicbrainzngs
