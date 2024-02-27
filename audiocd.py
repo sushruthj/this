@@ -1,5 +1,24 @@
 import os
 import subprocess
+import sys
+
+# Function to install required Python libraries using pip
+def install_libraries():
+    libraries = ['telebot', 'watchdog', 'pycdlib', 'pydub', 'mutagen', 'musicbrainzngs']
+    for library in libraries:
+        try:
+            subprocess.check_call([sys.executable, "-m", "pip", "install", library])
+        except subprocess.CalledProcessError as e:
+            print(f"Error installing {library}: {e}")
+            sys.exit(1)
+
+# Install required libraries
+install_libraries()
+
+
+
+import os
+import subprocess
 import shutil
 import time
 import telebot
