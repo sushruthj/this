@@ -28,7 +28,7 @@ def artist(update: Update, context: CallbackContext):
         os.chdir(folder_path)
 
         # Create a file named "success.txt"
-        # subprocess.run(["cdparanoia", "-B"])
+        subprocess.run(["cdparanoia", "-B"])
         bash_script_content = '''#!/bin/bash
                               for i in *.wav; do
                                   ffmpeg -i "$i" -c:a flac "${i%\.*}.flac";
