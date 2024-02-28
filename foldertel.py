@@ -54,7 +54,7 @@ def artist(update: Update, context: CallbackContext):
         subprocess.run(["chmod", "+x", "convert_to_flac.sh"])
         subprocess.run(["./convert_to_flac.sh"])
         #subprocess.run(["rm", "*.wav"])
-        #subprocess.run(["rm", "convert_to_flac.sh"])
+        subprocess.run(["rm", "convert_to_flac.sh"])
 
         # Notify the user
         context.bot.send_message(chat_id=user_id, text="CD Ripped.")
