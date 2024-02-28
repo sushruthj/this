@@ -1,55 +1,49 @@
 import os
-import telegram
-import retry
+from telegram.ext import Updater, CommandHandler, ConversationHandler, MessageHandler, Filters
 
-BASE_PATH = '/home/jay/Everything/Music'
-CONFIG_PATH = 'config.txt'
+ALBUM, ARTIST = range(2)
 
-def create_album_folder(album_name, artist_name):
-    folder_path = os.path.join(BASE_PATH, artist_name, album_name)
-    os.makedirs(folder_path, exist_ok=True)
-    print(f"Folder '{folder_path}' created!")
+def start(update, context):
+    update.message.reply_text("Hi! Welcome to the album creator bot. Please enter the album name.")
+    return ALBUM
 
-def send_message(bot_token, user_id, message):
-    bot = telegram.Bot(token=bot_token)
-    bot.send_message(chat_id=user_id, text=message)
+def album(update, context):
+    context.user_data['album'] = update.message.text
+    update.message.reply_text("Great! Now enter the artist name.")
+    return ARTIST
 
-@retry.retry(tries=3, delay=1, backoff=2)
-def get_response(bot_token):
-    bot = telegram.Bot(token=bot_token)
-    updates = bot.get_updates(timeout=10)
-    if updates:
-        last_update = updates[-1]
-        message_text = last_update.message.text
-        return message_text
-    else:
-        raise Exception("No response received")
+def artist(update, context):
+    artist_name = update.message.text
+    album_name = context.user_data['album']
+    folder_path = f"{artist_name}/{album_name}"
+    
+    try:
+        os.makedirs(folder_path)
+        update.message.reply_text(f"Folder created successfully: {folder_path}")
+    except OSError as e:
+        update.message.reply_text(f"Folder creation failed: {str(e)}")
 
-def get_config():
-    with open(CONFIG_PATH, 'r') as config_file:
-        lines = config_file.readlines()
-        token = lines[0].strip()
-        user_id = lines[1].strip()
-    return token, user_id
+    return ConversationHandler.END
+
+def cancel(update, context):
+    update.message.reply_text("Operation canceled.")
+    return ConversationHandler.END
 
 def main():
-    token, user_id = get_config()
+    updater = Updater("YOUR_BOT_TOKEN", use_context=True)
 
-    message = "Please provide the AlbumName and Artist Name."
-    send_message(token, user_id, message)
+    conv_handler = ConversationHandler(
+        entry_points=[CommandHandler('start', start)],
+        states={
+            ALBUM: [MessageHandler(Filters.text, album)],
+            ARTIST: [MessageHandler(Filters.text, artist)]
+        },
+        fallbacks=[CommandHandler('cancel', cancel)]
+    )
 
-    response = ""
-    while not response:
-        try:
-            response = get_response(token)
-        except Exception as e:
-            print(f"Error: {str(e)}")
-            retry_option = input("Retry? (y/n): ")
-            if retry_option.lower() == 'n':
-                return
-
-    album_name, artist_name = map(str.strip, response.split(','))
-    create_album_folder(album_name, artist_name)
+    updater.dispatcher.add_handler(conv_handler)
+    updater.start_polling()
+    updater.idle()
 
 if __name__ == '__main__':
     main()
