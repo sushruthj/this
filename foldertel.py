@@ -1,6 +1,6 @@
 import os
 from os.path import expanduser
-from telegram import Update
+from telegram import Update, Bot
 from telegram.ext import Updater, CommandHandler, ConversationHandler, MessageHandler, Filters, CallbackContext
 
 ALBUM, ARTIST = range(2)
@@ -68,7 +68,9 @@ def main():
     updater.dispatcher.add_handler(conversation_handler)
     
     # Execute the conversation when the bot is started
-    updater.dispatcher.process_update(Update.de_json({'update_id': 0, 'message': {'text': '/start', 'chat': {'id': user_id}}}))
+    test_update = Update(0)
+    test_update.message = Bot.get_me(updater.bot)
+    updater.dispatcher.process_update(test_update)
 
     updater.start_polling()
     updater.idle()
