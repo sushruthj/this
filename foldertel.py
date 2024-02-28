@@ -45,15 +45,16 @@ def artist(update: Update, context: CallbackContext):
         bash_script_content = '''#!/bin/bash
                               for i in *.wav; do
                                   ffmpeg -i "$i" -c:a flac "${i%\.*}.flac";
-                              done 
+                              done
+                              rm *.wav
                               '''
 
         with open("convert_to_flac.sh", "w") as file:
             file.write(bash_script_content)
         subprocess.run(["chmod", "+x", "convert_to_flac.sh"])
         subprocess.run(["./convert_to_flac.sh"])
-        subprocess.run(["rm", "*.wav"])
-        subprocess.run(["rm", "*.sh"])
+        #subprocess.run(["rm", "*.wav"])
+        #subprocess.run(["rm", "convert_to_flac.sh"])
 
         # Notify the user
         context.bot.send_message(chat_id=user_id, text="CD Ripped.")
