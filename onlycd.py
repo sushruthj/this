@@ -1,32 +1,56 @@
-from pydub import AudioSegment
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import os
 
-def rip_audio_cd(source_path, output_path):
-    # Create output directory if it doesn't exist
-    os.makedirs(output_path, exist_ok=True)
+# Your Telegram user ID
+YOUR_USER_ID = "YOUR_USER_ID"
 
-    # Load the audio CD
-    audio_cd = AudioSegment.from_file(source_path, format='cdda')
+# Define a function to handle the /start command
+def start(update, context):
+    if str(update.message.from_user.id) == YOUR_USER_ID:
+        update.message.reply_text("Welcome to the Album Organizer bot! Please send me the name of the artist.")
+    else:
+        update.message.reply_text("Sorry, you are not authorized to use this bot.")
 
-    # Get the number of audio tracks on the CD
-    num_tracks = len(audio_cd)
-    print(f"Found {num_tracks} tracks on the audio CD.")
+# Define a function to handle the artist name
+def receive_artist(update, context):
+    if str(update.message.from_user.id) == YOUR_USER_ID:
+        context.user_data['artist'] = update.message.text
+        update.message.reply_text("Great! Now, please send me the name of the album.")
+    else:
+        update.message.reply_text("Sorry, you are not authorized to use this bot.")
 
-    # Rip each track as a separate audio file
-    for track_num, track in enumerate(audio_cd):
-        # Convert track number to 2-digit format (e.g., 01, 02)
-        track_num_str = str(track_num + 1).zfill(2)
+# Define a function to handle the album name
+def receive_album(update, context):
+    if str(update.message.from_user.id) == YOUR_USER_ID:
+        artist = context.user_data.get('artist')
+        album = update.message.text
+        folder_path = f"{artist}/{album}"
 
-        # Set the output file name based on track number
-        output_file = os.path.join(output_path, f"Track{track_num_str}.mp3")
+        # Create the folder structure
+        os.makedirs(folder_path, exist_ok=True)
+        
+        update.message.reply_text(f"Folder '{album}' under '{artist}' has been created.")
+    else:
+        update.message.reply_text("Sorry, you are not authorized to use this bot.")
 
-        # Export the track as an MP3 file
-        track.export(output_file, format="mp3")
+# Set up the Telegram bot
+def main():
+    # Token for the Telegram Bot API
+    updater = Updater("YOUR_BOT_TOKEN", use_context=True)
 
-        print(f"Track {track_num_str} ripped successfully.")
+    # Get the dispatcher to register handlers
+    dp = updater.dispatcher
 
-# Usage example
-source_cd_path = "/dev/sr0"   # The path to your audio CD device
-output_folder = "./home/jay/Everything/Music"   # The path to the folder where you want to save the ripped audio files
+    # Define handlers
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(MessageHandler(Filters.regex(r'^[^/].*'), receive_artist))
+    dp.add_handler(MessageHandler(Filters.regex(r'^[^/].*'), receive_album))
 
-rip_audio_cd(source_cd_path, output_folder)
+    # Start the Bot
+    updater.start_polling()
+
+    # Run the bot until you press Ctrl-C
+    updater.idle()
+
+if __name__ == '__main__':
+    main()
