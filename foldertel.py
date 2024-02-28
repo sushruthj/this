@@ -18,7 +18,7 @@ def album(update: Update, context: CallbackContext):
 def artist(update: Update, context: CallbackContext):
     artist_name = update.message.text
     album_name = context.user_data['album']
-    folder_path = f"{artist_name}/{album_name}"
+    folder_path = f"~/home/jay/Everything/Music/{artist_name}/{album_name}"
     
     try:
         os.makedirs(folder_path)
