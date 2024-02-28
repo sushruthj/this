@@ -28,7 +28,7 @@ def artist(update: Update, context: CallbackContext):
     command = ['sudo', '-S', 'mount', '/dev/sda1']  
     process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
     stdout, stderr = process.communicate(input=password+'\n')
-    mediapath="mnt"
+    mediapath="/mnt"
     #folder_path = os.path.join(mediapath, artist_name, album_name)
     midpath = "Music"
     
