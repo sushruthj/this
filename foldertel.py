@@ -17,11 +17,11 @@ def artist(update: Update, context: CallbackContext):
     artist_name = update.message.text
     album_name = context.user_data['album']
     home_dir = expanduser("~")
-    mediapath="/mnt"
-    #folder_path = os.path.join(home_dir, artist_name, album_name)
+    mediapath="/mnt/SanDisk/"
+    #folder_path = os.path.join(mediapath, artist_name, album_name)
     midpath = "Music"
-    #subprocess.call('echo @Sne820447 | sudo apt update')
-    folder_path = os.path.join(home_dir, midpath, artist_name, album_name)
+    
+    folder_path = os.path.join(mediapath, midpath, artist_name, album_name)
 
     try:
         os.makedirs(folder_path)
