@@ -12,6 +12,14 @@ def send_message(bot_token, user_id, message):
     bot = telegram.Bot(token=bot_token)
     bot.send_message(chat_id=user_id, text=message)
 
+def get_response(bot_token):
+    bot = telegram.Bot(token=bot_token)
+    updates = bot.get_updates()
+    if updates:
+        last_update = updates[-1]
+        message_text = last_update.message.text
+        return message_text
+
 def get_config():
     config_path = 'config.txt'
     with open(config_path, 'r') as config_file:
@@ -22,13 +30,18 @@ def get_config():
     return token, user_id
 
 def main():
-    album_name = input("Enter the album name: ")
-    artist_name = input("Enter the artist name: ")
-
     token, user_id = get_config()
-
+    
     message = "Please provide the AlbumName and Artist Name."
     send_message(token, user_id, message)
+
+    response = ""
+    while not response:
+        response = get_response(token)
+
+    album_name, artist_name = response.split(',')
+    album_name = album_name.strip()
+    artist_name = artist_name.strip()
 
     create_album_folder(album_name, artist_name)
 
