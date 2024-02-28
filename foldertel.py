@@ -4,20 +4,31 @@ from os.path import expanduser
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, ConversationHandler, MessageHandler, Filters, CallbackContext
 ALBUM, ARTIST = range(2)
+
+
 def start(update: Update, context: CallbackContext):
     user_id = context.bot_data["user_id"]
     context.bot.send_message(chat_id=user_id, text="Please enter the album name.")
     return ALBUM
+
+
 def album(update: Update, context: CallbackContext):
     context.user_data['album'] = update.message.text
     user_id = context.bot_data["user_id"]
     context.bot.send_message(chat_id=user_id, text="Great! Now enter the artist name.")
     return ARTIST
+
+
 def artist(update: Update, context: CallbackContext):
     artist_name = update.message.text
     album_name = context.user_data['album']
     home_dir = expanduser("~")
-    mediapath="/mnt/SanDisk/"
+    with open('sec.txt', 'r') as file:
+         password = file.read().strip()
+    command = ['sudo', '-S', 'mount', '/dev/sda1']  
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+    stdout, stderr = process.communicate(input=password+'\n')
+    mediapath="mnt"
     #folder_path = os.path.join(mediapath, artist_name, album_name)
     midpath = "Music"
     
