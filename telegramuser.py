@@ -1,12 +1,13 @@
 import logging
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram.ext import Updater, CommandHandler, MessageHandler, filters
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                      level=logging.INFO)
 
-# Create your bot's token
-TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN'
+def get_bot_token():
+    with open('token.txt', 'r') as f:
+        return f.read().strip()
 
 # Define a function to handle the /start command
 def start(update, context):
@@ -20,6 +21,9 @@ def echo(update, context):
                              text=f"Your user ID is: {user_id}")
 
 def main():
+    # Get the bot token from token.txt
+    TOKEN = get_bot_token()
+
     # Create the Updater and pass your bot's token
     updater = Updater(token=TOKEN, use_context=True)
 
@@ -30,7 +34,7 @@ def main():
     dispatcher.add_handler(CommandHandler("start", start))
 
     # Register the message handler
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
+    dispatcher.add_handler(MessageHandler(filters.text & ~filters.command, echo))
 
     # Start the bot
     updater.start_polling()
