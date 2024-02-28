@@ -17,9 +17,10 @@ def artist(update: Update, context: CallbackContext):
     artist_name = update.message.text
     album_name = context.user_data['album']
     home_dir = expanduser("~")
-    folder_path = os.path.join(home_dir, artist_name, album_name)
-    midpath = "Everything/Music"
-    folder_path = os.path.join(home_dir, midpath, artist_name, album_name)
+    mediapath="/media/jay/Sandisk"
+    #folder_path = os.path.join(home_dir, artist_name, album_name)
+    midpath = "Music"
+    folder_path = os.path.join(mediapath, midpath, artist_name, album_name)
 
     try:
         os.makedirs(folder_path)
