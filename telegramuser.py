@@ -16,7 +16,7 @@ def start(update: Update, context):
 
 # Define a function to handle user messages
 def echo(update: Update, context):
-    user_id = update.message.from_user['id']
+    user_id = update.message.from_user.id
     context.bot.send_message(chat_id=update.effective_chat.id, text=f"Your user ID is: {user_id}")
 
 def main():
