@@ -17,7 +17,7 @@ def artist(update: Update, context: CallbackContext):
     artist_name = update.message.text
     album_name = context.user_data['album']
     home_dir = expanduser("~")
-    mediapath="/media/jay/Sandisk"
+    mediapath="/mnt"
     #folder_path = os.path.join(home_dir, artist_name, album_name)
     midpath = "Music"
     folder_path = os.path.join(mediapath, midpath, artist_name, album_name)
