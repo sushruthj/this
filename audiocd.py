@@ -1,8 +1,6 @@
-#Code
 import os
 import subprocess
 import sys
-import venv
 import time
 import telebot
 from watchdog.observers import Observer
@@ -10,23 +8,6 @@ from watchdog.events import FileSystemEventHandler
 from pycdlib import PyCdlib
 from pydub import AudioSegment
 from mutagen.easyid3 import EasyID3
-
-# Function to install required Python libraries using pip
-def install_libraries():
-    libraries = ['telebot', 'watchdog', 'pycdlib', 'pydub', 'mutagen']
-    subprocess.check_call([sys.executable, "-m", "pip", "install"] + libraries)
-
-# Function to create and activate virtual environment
-def create_and_activate_venv():
-    venv_dir = 'venv'
-    if not os.path.exists(venv_dir):
-        venv.create(venv_dir, with_pip=True)
-    activate_script = os.path.join(venv_dir, 'Scripts' if os.name == 'nt' else 'bin', 'activate')
-    subprocess.check_call([activate_script], shell=True)
-
-# Install required libraries
-create_and_activate_venv()
-install_libraries()
 
 # Read bot token and user ID from config file
 def read_config(filename):
