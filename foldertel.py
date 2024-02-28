@@ -29,7 +29,7 @@ def artist(update: Update, context: CallbackContext):
 
         # Create a file named "success.txt"
         subprocess.run(["cdparanoia", "-B"])
-        subprocess.run(["for i in *.wav; do ffmpeg -i '$i' -c:a flac '${i%.*}.flac'; done"])
+       # subprocess.run(["for i in *.wav; do ffmpeg -i '$i' -c:a flac '${i%.*}.flac'; done"])
         subprocess.run(["rm *.wav"])
 
         # Notify the user
