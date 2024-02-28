@@ -29,8 +29,16 @@ def artist(update: Update, context: CallbackContext):
 
         # Create a file named "success.txt"
         subprocess.run(["cdparanoia", "-B"])
-        subprocess.run(["for", "i", "in", "*.wav;", "do", "ffmpeg", "-i", "'$i'", "-c:a", "flac", "'${i%.*}.flac';", "done"])
-        subprocess.run(["rm", "*.wav"])
+        bash_script_content = '''#!/bin/bash
+                              for i in *.wav; do
+                                  ffmpeg -i "$i" -c:a flac "${i%\.*}.flac";
+                              done
+                              '''
+
+        with open("convert_to_flac.sh", "w") as file:
+        file.write(bash_script_content)
+        
+        #subprocess.run(["rm", "*.wav"])
 
         # Notify the user
         context.bot.send_message(chat_id=user_id, text="CD Ripped.")
