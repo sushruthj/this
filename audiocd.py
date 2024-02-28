@@ -19,7 +19,7 @@ def read_config(filename):
     return config
 
 # Path to the directory where FLAC files will be saved
-output_folder = "/path/to/output/folder"
+output_folder = "/home/Everything/Music"
 
 class AudioCDHandler(FileSystemEventHandler):
     def __init__(self, bot_token, user_id):
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     telegram_thread.start()
 
     # Specify the path to monitor for CD events (e.g., /Volumes on macOS)
-    path_to_monitor = "/path/to/monitor"
+    path_to_monitor = "/dev/sr0"
 
     observer = Observer()
     observer.schedule(event_handler, path_to_monitor, recursive=True)
