@@ -1,5 +1,6 @@
 import logging
-from telegram.ext import Updater, CommandHandler, MessageHandler, filters
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram import Bot
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -24,8 +25,11 @@ def main():
     # Get the bot token from token.txt
     TOKEN = get_bot_token()
 
-    # Create the Updater and pass your bot's token
-    updater = Updater(token=TOKEN, use_context=True)
+    # Create the Bot instance
+    bot = Bot(token=TOKEN)
+
+    # Create the Updater with the Bot instance
+    updater = Updater(bot=bot, use_context=True)
 
     # Get the dispatcher to register handlers
     dispatcher = updater.dispatcher
@@ -34,7 +38,7 @@ def main():
     dispatcher.add_handler(CommandHandler("start", start))
 
     # Register the message handler
-    dispatcher.add_handler(MessageHandler(filters.text & ~filters.command, echo))
+    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
 
     # Start the bot
     updater.start_polling()
