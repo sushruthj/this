@@ -1,47 +1,44 @@
 import os
-from telegram.ext import Updater, CommandHandler, ConversationHandler, MessageHandler, Filters
+from telegram import Update
+from telegram.ext import Updater, CommandHandler, ConversationHandler, MessageHandler, Filters, CallbackContext
 
 ALBUM, ARTIST = range(2)
 
-def start(update, context):
+def start(update: Update, context: CallbackContext):
     update.message.reply_text("Hi! Welcome to the album creator bot. Please enter the album name.")
     return ALBUM
 
-def album(update, context):
+def album(update: Update, context: CallbackContext):
     context.user_data['album'] = update.message.text
     update.message.reply_text("Great! Now enter the artist name.")
     return ARTIST
 
-def artist(update, context):
+def artist(update: Update, context: CallbackContext):
     artist_name = update.message.text
     album_name = context.user_data['album']
     folder_path = f"{artist_name}/{album_name}"
     
     try:
         os.makedirs(folder_path)
-        update.message.reply_text(f"Folder created successfully: {folder_path}")
+        context.bot.send_message(chat_id=update.effective_chat.id, text=f"Folder created successfully: {folder_path}")
     except OSError as e:
-        update.message.reply_text(f"Folder creation failed: {str(e)}")
+        context.bot.send_message(chat_id=update.effective_chat.id, text=f"Folder creation failed: {str(e)}")
 
-    return ConversationHandler.END
-
-def cancel(update, context):
-    update.message.reply_text("Operation canceled.")
     return ConversationHandler.END
 
 def main():
-    updater = Updater("YOUR_BOT_TOKEN", use_context=True)
+    updater = Updater("YOUR_BOT_TOKEN")
 
-    conv_handler = ConversationHandler(
-        entry_points=[CommandHandler('start', start)],
+    updater.dispatcher.add_handler(CommandHandler('start', start))
+    updater.dispatcher.add_handler(ConversationHandler(
+        entry_points=[MessageHandler(Filters.private & ~Filters.command, start)],
         states={
             ALBUM: [MessageHandler(Filters.text, album)],
             ARTIST: [MessageHandler(Filters.text, artist)]
         },
-        fallbacks=[CommandHandler('cancel', cancel)]
-    )
+        fallbacks=[]
+    ))
 
-    updater.dispatcher.add_handler(conv_handler)
     updater.start_polling()
     updater.idle()
 
