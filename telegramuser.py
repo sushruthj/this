@@ -6,7 +6,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                      level=logging.INFO)
 
 def get_bot_token():
-    with open('token.txt', 'r') as f:
+    with open('config.txt', 'r') as f:
         return f.read().strip()
 
 # Define a function to handle the /start command
