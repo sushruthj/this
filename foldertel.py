@@ -6,9 +6,12 @@ from telegram.ext import Updater, CommandHandler, ConversationHandler, MessageHa
 ALBUM, ARTIST = range(2)
 
 def start(update: Update, context: CallbackContext):
-    user_id = context.bot_data["user_id"]
-    context.bot.send_message(chat_id=user_id, text="Please enter the album name.")
-    return ALBUM
+    if 'album' not in context.user_data:
+        user_id = context.bot_data["user_id"]
+        context.bot.send_message(chat_id=user_id, text="Please enter the album name.")
+        return ALBUM
+    else:
+        return artist(update, context)
 
 def album(update: Update, context: CallbackContext):
     context.user_data['album'] = update.message.text
@@ -20,8 +23,7 @@ def artist(update: Update, context: CallbackContext):
     artist_name = update.message.text
     album_name = context.user_data['album']
     home_dir = expanduser("~")
-    midpath = "Everything/Music"
-    folder_path = os.path.join(home_dir, midpath, artist_name, album_name)
+    folder_path = os.path.join(home_dir, artist_name, album_name)
     
     try:
         os.makedirs(folder_path)
@@ -54,14 +56,19 @@ def main():
     updater = Updater(bot_token)
     updater.dispatcher.bot_data["user_id"] = user_id
 
-    updater.dispatcher.add_handler(ConversationHandler(
+    conversation_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
         states={
             ALBUM: [MessageHandler(Filters.text, album)],
             ARTIST: [MessageHandler(Filters.text, artist)]
         },
         fallbacks=[]
-    ))
+    )
+
+    updater.dispatcher.add_handler(conversation_handler)
+    
+    # Execute the conversation when the bot is started
+    updater.dispatcher.process_update(Update.de_json({'update_id': 0, 'message': {'text': '/start', 'chat': {'id': user_id}}}))
 
     updater.start_polling()
     updater.idle()
