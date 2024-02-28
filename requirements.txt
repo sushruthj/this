@@ -4,3 +4,4 @@ pycdlib
 pydub
 mutagen
 musicbrainzngs
+pyTelegramBotAPI
