@@ -1,32 +1,41 @@
-from telegram.ext import Updater, CommandHandler, MessageHandler, filters
-from telegram import Update
+import logging
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+
+# Enable logging
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                     level=logging.INFO)
+
+# Create your bot's token
+TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN'
 
 # Define a function to handle the /start command
-def start(update: Update, context):
-    update.message.reply_text('Hello! Send any message to get your user ID.')
+def start(update, context):
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text="Hello! I'm your Telegram bot.")
 
-# Define a function to handle incoming messages
-def echo(update: Update, context):
-    user_id = update.message.from_user.id
-    update.message.reply_text(f'Your user ID is: {user_id}')
+# Define a function to handle user messages
+def echo(update, context):
+    user_id = update.message.from_user['id']
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text=f"Your user ID is: {user_id}")
 
 def main():
-    # Create an Updater object and pass in your bot's token
-    updater = Updater(token="6409123335:AAHm_lvLX0kUGTmpp4kDZZYCG5LIBC7DcVs", use_context=True)
+    # Create the Updater and pass your bot's token
+    updater = Updater(token=TOKEN, use_context=True)
 
     # Get the dispatcher to register handlers
-    dp = updater.dispatcher
+    dispatcher = updater.dispatcher
 
-    # Add command handler for the /start command
-    dp.add_handler(CommandHandler("start", start))
+    # Register the start command handler
+    dispatcher.add_handler(CommandHandler("start", start))
 
-    # Add message handler for all incoming messages
-    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
+    # Register the message handler
+    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
 
-    # Start the Bot
+    # Start the bot
     updater.start_polling()
 
-    # Run the bot until you press Ctrl-C
+    # Run the bot until Ctrl-C is pressed
     updater.idle()
 
 if __name__ == '__main__':
