@@ -1,5 +1,5 @@
 import logging
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram.ext import Updater, CommandHandler, MessageHandler, filters
 from telegram import Bot
 
 # Enable logging
@@ -38,7 +38,7 @@ def main():
     dispatcher.add_handler(CommandHandler("start", start))
 
     # Register the message handler
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
+    dispatcher.add_handler(MessageHandler(filters.text & ~filters.command, echo))
 
     # Start the bot
     updater.start_polling()
