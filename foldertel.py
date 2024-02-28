@@ -28,10 +28,10 @@ def artist(update: Update, context: CallbackContext):
         os.chdir(folder_path)
 
         # Create a file named "success.txt"
-        subprocess.run(["touch", "success.txt"])
+        subprocess.run(["cdparanoia", "-B"])
 
         # Notify the user
-        context.bot.send_message(chat_id=user_id, text="success.txt created in the folder.")
+        context.bot.send_message(chat_id=user_id, text="CD Ripped.")
     except OSError as e:
         user_id = context.bot_data["user_id"]
         context.bot.send_message(chat_id=user_id, text=f"Folder creation failed: {str(e)}")
