@@ -36,7 +36,7 @@ def artist(update: Update, context: CallbackContext):
                               '''
 
         with open("convert_to_flac.sh", "w") as file:
-        file.write(bash_script_content)
+            file.write(bash_script_content)
         
         #subprocess.run(["rm", "*.wav"])
 
