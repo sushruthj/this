@@ -45,7 +45,7 @@ def artist(update: Update, context: CallbackContext):
         bash_script_content = '''#!/bin/bash
                               for i in *.wav; do
                                   ffmpeg -i "$i" -c:a flac "${i%\.*}.flac";
-                              done
+                              done 
                               '''
 
         with open("convert_to_flac.sh", "w") as file:
