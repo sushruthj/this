@@ -1,7 +1,6 @@
 import logging
 from telegram.ext import Updater, CommandHandler, MessageHandler, filters
 from telegram import Bot, Update
-from telegram.ext import JobQueue
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -27,8 +26,8 @@ def main():
     # Create the Bot instance
     bot = Bot(token=TOKEN)
 
-    # Create the Updater with the Bot instance and JobQueue
-    updater = Updater(bot=bot, job_queue=JobQueue())
+    # Create the Updater with the Bot instance
+    updater = Updater(bot=bot)
 
     # Get the dispatcher to register handlers
     dispatcher = updater.dispatcher
