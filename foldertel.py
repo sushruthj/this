@@ -5,12 +5,14 @@ from telegram.ext import Updater, CommandHandler, ConversationHandler, MessageHa
 ALBUM, ARTIST = range(2)
 
 def start(update: Update, context: CallbackContext):
-    update.message.reply_text("Hi! Welcome to the album creator bot. Please enter the album name.")
+    user_id = context.bot_data["user_id"]
+    context.bot.send_message(chat_id=user_id, text="Please enter the album name.")
     return ALBUM
 
 def album(update: Update, context: CallbackContext):
     context.user_data['album'] = update.message.text
-    update.message.reply_text("Great! Now enter the artist name.")
+    user_id = context.bot_data["user_id"]
+    context.bot.send_message(chat_id=user_id, text="Great! Now enter the artist name.")
     return ARTIST
 
 def artist(update: Update, context: CallbackContext):
@@ -20,18 +22,37 @@ def artist(update: Update, context: CallbackContext):
     
     try:
         os.makedirs(folder_path)
-        context.bot.send_message(chat_id=update.effective_chat.id, text=f"Folder created successfully: {folder_path}")
+        user_id = context.bot_data["user_id"]
+        context.bot.send_message(chat_id=user_id, text=f"Folder created successfully: {folder_path}")
     except OSError as e:
-        context.bot.send_message(chat_id=update.effective_chat.id, text=f"Folder creation failed: {str(e)}")
+        user_id = context.bot_data["user_id"]
+        context.bot.send_message(chat_id=user_id, text=f"Folder creation failed: {str(e)}")
 
     return ConversationHandler.END
 
-def main():
-    updater = Updater("YOUR_BOT_TOKEN")
+def load_config(file_path):
+    bot_token = ""
+    user_id = ""
+    with open(file_path, "r") as file:
+        lines = file.readlines()
+        for line in lines:
+            key, value = line.strip().split("=")
+            if key == "bot_token":
+                bot_token = value
+            elif key == "user_id":
+                user_id = value
 
-    updater.dispatcher.add_handler(CommandHandler('start', start))
+    return bot_token, user_id
+
+def main():
+    config_file = "config.txt"
+    bot_token, user_id = load_config(config_file)
+
+    updater = Updater(bot_token)
+    updater.dispatcher.bot_data["user_id"] = user_id
+
     updater.dispatcher.add_handler(ConversationHandler(
-        entry_points=[MessageHandler(Filters.private & ~Filters.command, start)],
+        entry_points=[CommandHandler('start', start)],
         states={
             ALBUM: [MessageHandler(Filters.text, album)],
             ARTIST: [MessageHandler(Filters.text, artist)]
