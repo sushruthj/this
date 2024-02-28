@@ -1,4 +1,5 @@
 import os
+from os.path import expanduser
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, ConversationHandler, MessageHandler, Filters, CallbackContext
 
@@ -18,7 +19,8 @@ def album(update: Update, context: CallbackContext):
 def artist(update: Update, context: CallbackContext):
     artist_name = update.message.text
     album_name = context.user_data['album']
-    folder_path = f"./home/jay/Everything/Music/{artist_name}/{album_name}"
+    home_dir = expanduser("~")
+    folder_path = os.path.join(home_dir, artist_name, album_name)
     
     try:
         os.makedirs(folder_path)
