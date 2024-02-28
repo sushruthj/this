@@ -66,10 +66,19 @@ def main():
     )
 
     updater.dispatcher.add_handler(conversation_handler)
-    
-    # Execute the conversation when the bot is started
-    test_update = Update(0)
-    test_update.message = Bot.get_me(updater.bot)
+
+    test_update = Update(
+        update_id=-1,
+        message=update.message if hasattr(update, 'message') else None,
+        callback_query=update.callback_query if hasattr(update, 'callback_query') else None,
+        inline_query=update.inline_query if hasattr(update, 'inline_query') else None,
+        chosen_inline_result=update.chosen_inline_result if hasattr(update, 'chosen_inline_result') else None,
+        shipping_query=update.shipping_query if hasattr(update, 'shipping_query') else None,
+        pre_checkout_query=update.pre_checkout_query if hasattr(update, 'pre_checkout_query') else None,
+        poll=update.poll if hasattr(update, 'poll') else None,
+        poll_answer=update.poll_answer if hasattr(update, 'poll_answer') else None,
+    )
+
     updater.dispatcher.process_update(test_update)
 
     updater.start_polling()
