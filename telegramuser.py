@@ -1,6 +1,7 @@
 import logging
 from telegram.ext import Updater, CommandHandler, MessageHandler, filters
-from telegram import Bot
+from telegram import Bot, Update
+from telegram.ext import JobQueue
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -11,13 +12,13 @@ def get_bot_token():
         return f.read().strip()
 
 # Define a function to handle the /start command
-def start(bot, update):
-    update.message.reply_text("Hello! I'm your Telegram bot.")
+def start(update: Update, context):
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Hello! I'm your Telegram bot.")
 
 # Define a function to handle user messages
-def echo(bot, update):
+def echo(update: Update, context):
     user_id = update.message.from_user['id']
-    update.message.reply_text(f"Your user ID is: {user_id}")
+    context.bot.send_message(chat_id=update.effective_chat.id, text=f"Your user ID is: {user_id}")
 
 def main():
     # Get the bot token from token.txt
@@ -26,8 +27,8 @@ def main():
     # Create the Bot instance
     bot = Bot(token=TOKEN)
 
-    # Create the Updater with the Bot instance
-    updater = Updater(bot=bot)
+    # Create the Updater with the Bot instance and JobQueue
+    updater = Updater(bot=bot, job_queue=JobQueue())
 
     # Get the dispatcher to register handlers
     dispatcher = updater.dispatcher
@@ -36,7 +37,7 @@ def main():
     dispatcher.add_handler(CommandHandler("start", start))
 
     # Register the message handler
-    dispatcher.add_handler(MessageHandler(filters.text & (~filters.command), echo))
+    dispatcher.add_handler(MessageHandler(filters.text & ~filters.command, echo))
 
     # Start the bot
     updater.start_polling()
