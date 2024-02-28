@@ -1,17 +1,18 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram import Update
 
 # Define a function to handle the /start command
-def start(update, context):
+def start(update: Update, context):
     update.message.reply_text('Hello! Send any message to get your user ID.')
 
 # Define a function to handle incoming messages
-def echo(update, context):
+def echo(update: Update, context):
     user_id = update.message.from_user.id
     update.message.reply_text(f'Your user ID is: {user_id}')
 
 def main():
     # Create an Updater object and pass in your bot's token
-    updater = Updater("6409123335:AAHm_lvLX0kUGTmpp4kDZZYCG5LIBC7DcVs", use_context=True)
+    updater = Updater("6409123335:AAHm_lvLX0kUGTmpp4kDZZYCG5LIBC7DcVs")
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
