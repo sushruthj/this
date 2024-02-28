@@ -1,30 +1,25 @@
 import os
 from os.path import expanduser
-from telegram import Update, Bot
+from telegram import Update
 from telegram.ext import Updater, CommandHandler, ConversationHandler, MessageHandler, Filters, CallbackContext
-
 ALBUM, ARTIST = range(2)
-
 def start(update: Update, context: CallbackContext):
-    if 'album' not in context.user_data:
-        user_id = context.bot_data["user_id"]
-        context.bot.send_message(chat_id=user_id, text="Please enter the album name.")
-        return ALBUM
-    else:
-        return artist(update, context)
-
+    user_id = context.bot_data["user_id"]
+    context.bot.send_message(chat_id=user_id, text="Please enter the album name.")
+    return ALBUM
 def album(update: Update, context: CallbackContext):
     context.user_data['album'] = update.message.text
     user_id = context.bot_data["user_id"]
     context.bot.send_message(chat_id=user_id, text="Great! Now enter the artist name.")
     return ARTIST
-
 def artist(update: Update, context: CallbackContext):
     artist_name = update.message.text
     album_name = context.user_data['album']
     home_dir = expanduser("~")
     folder_path = os.path.join(home_dir, artist_name, album_name)
-    
+    midpath = "Everything/Music"
+    folder_path = os.path.join(home_dir, midpath, artist_name, album_name)
+
     try:
         os.makedirs(folder_path)
         user_id = context.bot_data["user_id"]
@@ -32,9 +27,7 @@ def artist(update: Update, context: CallbackContext):
     except OSError as e:
         user_id = context.bot_data["user_id"]
         context.bot.send_message(chat_id=user_id, text=f"Folder creation failed: {str(e)}")
-
     return ConversationHandler.END
-
 def load_config(file_path):
     bot_token = ""
     user_id = ""
@@ -46,43 +39,21 @@ def load_config(file_path):
                 bot_token = value
             elif key == "user_id":
                 user_id = value
-
     return bot_token, user_id
-
 def main():
     config_file = "config.txt"
     bot_token, user_id = load_config(config_file)
-
     updater = Updater(bot_token)
     updater.dispatcher.bot_data["user_id"] = user_id
-
-    conversation_handler = ConversationHandler(
+    updater.dispatcher.add_handler(ConversationHandler(
         entry_points=[CommandHandler('start', start)],
         states={
             ALBUM: [MessageHandler(Filters.text, album)],
             ARTIST: [MessageHandler(Filters.text, artist)]
         },
         fallbacks=[]
-    )
-
-    updater.dispatcher.add_handler(conversation_handler)
-
-    test_update = Update(
-        update_id=-1,
-        message=updater.bot.get_me().to_dict() if hasattr(updater.bot, 'get_me') else None,
-        callback_query=None,
-        inline_query=None,
-        chosen_inline_result=None,
-        shipping_query=None,
-        pre_checkout_query=None,
-        poll=None,
-        poll_answer=None,
-    )
-
-    updater.dispatcher.process_update(test_update)
-
+    ))
     updater.start_polling()
     updater.idle()
-
 if __name__ == '__main__':
     main()
