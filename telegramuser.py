@@ -12,7 +12,7 @@ def echo(update: Update, context):
 
 def main():
     # Create an Updater object and pass in your bot's token
-    updater = Updater("6409123335:AAHm_lvLX0kUGTmpp4kDZZYCG5LIBC7DcVs")
+    updater = Updater(token="6409123335:AAHm_lvLX0kUGTmpp4kDZZYCG5LIBC7DcVs", use_context=True)
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
