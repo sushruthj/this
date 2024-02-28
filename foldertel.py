@@ -69,7 +69,7 @@ def main():
 
     test_update = Update(
         update_id=-1,
-        message=updater.bot.get_me(update) if hasattr(updater.bot, 'get_me') else None,
+        message=updater.bot.get_me() if hasattr(updater.bot, 'get_me') else None,
         callback_query=update.callback_query if hasattr(update, 'callback_query') else None,
         inline_query=update.inline_query if hasattr(update, 'inline_query') else None,
         chosen_inline_result=update.chosen_inline_result if hasattr(update, 'chosen_inline_result') else None,
