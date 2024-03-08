@@ -36,10 +36,13 @@ trap cleanup EXIT
 # Ensure log file exists
 touch $LOG_FILE || { echo "Failed to create log file" >> $LOG_FILE; exit 1; }
 
+# Get the CD/DVD device path
+CD_DEVICE_PATH=$(udevadm info -q path -n /dev/sr0)
+
 # Monitor CD insertion and ejection using udev
 udevadm monitor --udev --subsystem-match=block --property | \
 while read -r -- _ _ event devpath _; do
-    if [[ "$event" == "change" && "$devpath" == "/dev/sr0" ]]; then
+    if [[ "$event" == "change" && "$devpath" == "$CD_DEVICE_PATH" ]]; then
         # Check if CD is inserted
         if udevadm info -q property -n "$devpath" | grep -q ID_CDROM_MEDIA; then
             echo "CD inserted" >> $LOG_FILE
